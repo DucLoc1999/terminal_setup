@@ -27,7 +27,7 @@ zstyle ':fzf-tab:*' continuous-trigger 'right'
 zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
 
 # cd: inline popup with eza preview
-zstyle ':fzf-tab:complete:cd:*' fzf-command fzf-tmux -w 50 -x 0 -y 0 --
+zstyle ':fzf-tab:complete:cd:*' fzf-command fzf-tmux -w 50 --
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1a --color=always "$realpath" || ls -1a --color=always "$realpath"'
 
 # nano: floating popup with bat preview
