@@ -4,7 +4,7 @@
 REQUIRED_COMMANDS=(
   zsh
   tmux
-  bat
+  batcat
   fzf
   eza
   git

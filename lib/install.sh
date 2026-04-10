@@ -123,6 +123,14 @@ run_profile_installer() {
   esac
 }
 
+has_existing_backup() {
+  local found=0
+  for dir in "$BACKUPS_DIR"/*; do
+    [[ -d "$dir" ]] && found=1 && break
+  done
+  return $((1 - found))
+}
+
 install_profile() {
   local profile_name="$1"
   local profile_dir="$PROFILES_DIR/$profile_name"
@@ -142,7 +150,21 @@ install_profile() {
   fi
 
   print_header "Install"
-  backup_current_state "$profile_name"
+
+  if has_existing_backup; then
+    echo "Existing backups found in: $BACKUPS_DIR"
+    find_backups | sed 's/^/  /'
+    echo
+  else
+    echo "No existing backups found."
+  fi
+
+  if [[ "${TERMINAL_SETUP_ASSUME_YES:-0}" == "1" ]] || confirm "Create a backup of your current state before installing?"; then
+    backup_current_state "$profile_name"
+  else
+    echo "Skipping backup."
+  fi
+
   run_profile_installer "$profile_dir"
   apply_profile_files "$profile_dir"
 }

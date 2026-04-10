@@ -17,15 +17,15 @@ usage() {
   cat <<'EOF'
 Usage:
   terminal-setup.sh list
-  terminal-setup.sh backup [profile]
+  terminal-setup.sh backup [-rm] [label]
   terminal-setup.sh install <profile>
   terminal-setup.sh restore <backup-name>
 
 Commands:
-  list       Show available profiles and backups
-  backup     Save the current terminal state into backups/
-  install    Backup current state, install dependencies, then apply a profile
-  restore    Restore a previously saved backup
+  list             Show available profiles and backups
+  backup           manage backups: save the current terminal state into backups/ (default: manual), or remove a backup (-rm)
+  install          Backup current state, install dependencies, then apply a profile
+  restore          Restore a previously saved backup
 EOF
 }
 
@@ -54,7 +54,17 @@ main() {
       ;;
     backup)
       shift
-      backup_current_state "${1:-manual}"
+      if [[ $# -gt 0 && "$1" == "-rm" ]]; then
+        shift
+        if [[ $# -lt 1 ]]; then
+          echo "Missing backup name."
+          usage
+          exit 1
+        fi
+        remove_backup "$1"
+      else
+        backup_current_state "${1:-manual}"
+      fi
       ;;
     install)
       shift

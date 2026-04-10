@@ -1,2 +1,5 @@
 backups/*
 !backups/.gitkeep
+
+# Documents
+docs/

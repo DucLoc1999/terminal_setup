@@ -5,6 +5,7 @@ BACKUP_FILES=(
   ".zprofile"
   ".bashrc"
   ".tmux.conf"
+  ".tmux.conf.local"
   ".gitconfig"
 )
 
@@ -18,12 +19,35 @@ backup_current_state() {
   mkdir -p "$backup_dir"
 
   print_header "Backup"
-  echo "Saving current state from $TARGET_HOME to $backup_dir"
+  echo "Saving current state to: $backup_dir"
 
   for file in "${BACKUP_FILES[@]}"; do
     if [[ -e "$TARGET_HOME/$file" ]]; then
       cp -a "$TARGET_HOME/$file" "$backup_dir/"
-      echo "Saved $file"
+      echo "  saved  $file"
     fi
   done
+
+  echo
+  echo "Backup complete: $backup_dir"
+}
+
+remove_backup() {
+  local backup_name="$1"
+  local backup_dir="$BACKUPS_DIR/$backup_name"
+
+  if [[ ! -d "$backup_dir" ]]; then
+    echo "Backup not found: $backup_name"
+    exit 1
+  fi
+
+  print_header "Remove Backup"
+  echo "Backup to remove: $backup_dir"
+  if ! confirm "Are you sure you want to permanently delete this backup?"; then
+    echo "Remove cancelled."
+    exit 0
+  fi
+
+  rm -rf "$backup_dir"
+  echo "Removed: $backup_dir"
 }
