@@ -7,6 +7,9 @@ print_header() {
 confirm() {
   local prompt="${1:-Continue?}"
   local answer
+  if [[ "${TERMINAL_SETUP_ASSUME_YES:-0}" == "1" ]]; then
+    return 0
+  fi
   read -r -p "$prompt [y/N] " answer
   [[ "$answer" == "y" || "$answer" == "Y" ]]
 }

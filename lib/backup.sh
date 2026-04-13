@@ -4,9 +4,12 @@ BACKUP_FILES=(
   ".zshrc"
   ".zprofile"
   ".bashrc"
-  ".tmux.conf"
-  ".tmux.conf.local"
   ".gitconfig"
+)
+
+XDG_TMUX_FILES=(
+  ".config/tmux/tmux.conf"
+  ".config/tmux/tmux.conf.local"
 )
 
 backup_current_state() {
@@ -24,6 +27,14 @@ backup_current_state() {
   for file in "${BACKUP_FILES[@]}"; do
     if [[ -e "$TARGET_HOME/$file" ]]; then
       cp -a "$TARGET_HOME/$file" "$backup_dir/"
+      echo "  saved  $file"
+    fi
+  done
+
+  for file in "${XDG_TMUX_FILES[@]}"; do
+    if [[ -e "$TARGET_HOME/$file" ]]; then
+      mkdir -p "$backup_dir/tmux"
+      cp -a "$TARGET_HOME/$file" "$backup_dir/tmux/"
       echo "  saved  $file"
     fi
   done

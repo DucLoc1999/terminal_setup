@@ -84,16 +84,25 @@ apply_profile_files() {
 
   print_header "Apply Config"
   for src in "$config_dir"/*; do
-    local base
+    local base relpath
     base="$(basename "$src")"
     [[ "$base" == "." || "$base" == ".." ]] && continue
 
-    if [[ -e "$TARGET_HOME/$base" || -L "$TARGET_HOME/$base" ]]; then
-      mv "$TARGET_HOME/$base" "$TARGET_HOME/${base}.terminal-setup-backup.$(date +%s)"
+    relpath="${src#$config_dir/}"
+
+    if [[ "$relpath" == "tmux"* ]]; then
+      relpath=".config/$relpath"
     fi
 
-    cp -a "$src" "$TARGET_HOME/$base"
-    echo "Installed $base"
+    if [[ -e "$TARGET_HOME/$relpath" || -L "$TARGET_HOME/$relpath" ]]; then
+      mv "$TARGET_HOME/$relpath" "$TARGET_HOME/${relpath}.terminal-setup-backup.$(date +%s)"
+    fi
+
+    if [[ -d "$src" ]]; then
+      mkdir -p "$(dirname "$TARGET_HOME/$relpath")"
+    fi
+    cp -a "$src" "$TARGET_HOME/$relpath"
+    echo "Installed $relpath"
   done
 
   shopt -u nullglob dotglob

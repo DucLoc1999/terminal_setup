@@ -40,6 +40,16 @@ list_profiles() {
   fi
 }
 
+exec_shell() {
+  if [[ -n "$SHELL" && -x "$SHELL" ]]; then
+    if [[ "${TERMINAL_SETUP_SKIP_EXEC_SHELL:-0}" != "1" ]]; then
+      echo
+      echo "Spawning new shell..."
+      exec "$SHELL"
+    fi
+  fi
+}
+
 main() {
   mkdir -p "$BACKUPS_DIR"
 
@@ -74,6 +84,7 @@ main() {
         exit 1
       fi
       install_profile "$1"
+      exec_shell
       ;;
     restore)
       shift

@@ -25,7 +25,7 @@ if [[ ! -d "$HOME/.oh-my-zsh" ]] && command -v curl >/dev/null 2>&1 && command -
   RUNZSH=no CHSH=no KEEP_ZSHRC=yes sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 fi
 
-if [[ ! -d "$HOME/.tmux" ]] && command -v curl >/dev/null 2>&1 && command -v git >/dev/null 2>&1; then
+if command -v curl >/dev/null 2>&1 && command -v git >/dev/null 2>&1; then
   curl -fsSL "https://github.com/gpakosz/.tmux/raw/refs/heads/master/install.sh" | bash
 fi
 
