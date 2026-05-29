@@ -45,7 +45,7 @@ Restore always saves a safety backup of the current state before overwriting any
 ## Adding a new profile
 
 1. Create `profiles/<name>/`
-2. Add dotfiles to `profiles/<name>/configs/` — they are copied verbatim to `$HOME`
+2. Add dotfiles to `profiles/<name>/user_home/` — they are copied verbatim to `$HOME`
 3. Optionally add `profiles/<name>/requirements.sh` declaring `REQUIRED_COMMANDS`, `REQUIRED_PATHS`, and/or `REQUIRES_POWERLINE_FONT`
 4. Optionally add `profiles/<name>/install/ubuntu.sh` (and/or `macos.sh`) for OS package setup
 5. Run `bash bin/terminal-setup.sh install <name>`

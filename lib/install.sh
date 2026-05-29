@@ -73,7 +73,7 @@ profile_precheck() {
 
 apply_profile_files() {
   local profile_dir="$1"
-  local config_dir="$profile_dir/configs"
+  local config_dir="$profile_dir/user_home"
   local src
   shopt -s nullglob dotglob
 
@@ -89,10 +89,6 @@ apply_profile_files() {
     [[ "$base" == "." || "$base" == ".." ]] && continue
 
     relpath="${src#$config_dir/}"
-
-    if [[ "$relpath" == "tmux"* ]]; then
-      relpath=".config/$relpath"
-    fi
 
     if [[ -e "$TARGET_HOME/$relpath" || -L "$TARGET_HOME/$relpath" ]]; then
       mv "$TARGET_HOME/$relpath" "$TARGET_HOME/${relpath}.terminal-setup-backup.$(date +%s)"

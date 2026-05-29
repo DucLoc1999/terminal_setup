@@ -31,11 +31,11 @@ No build step, no tests, no linter currently configured.
 **Libraries (`lib/`):**
 - `ui.sh` — display helpers (`print_header`, `confirm`) and directory scanners (`find_profiles`, `find_backups`). Depends on globals from the entry point.
 - `backup.sh` — `backup_current_state()` copies a fixed list of dotfiles (`BACKUP_FILES` array) from `$TARGET_HOME` into a timestamped backup dir.
-- `install.sh` — profile lifecycle: `load_profile_requirements` (sources `requirements.sh`), `profile_precheck`, `run_profile_installer` (dispatches to OS-specific script), `apply_profile_files` (copies `configs/*` into `$TARGET_HOME`).
+- `install.sh` — profile lifecycle: `load_profile_requirements` (sources `requirements.sh`), `profile_precheck`, `run_profile_installer` (dispatches to OS-specific script), `apply_profile_files` (copies `user_home/*` into `$TARGET_HOME`).
 - `restore.sh` — `restore_backup()` creates a safety backup then copies files back from a named backup dir.
 
 **Profile contract (`profiles/<name>/`):**
-- `configs/` — dotfiles copied verbatim to `$TARGET_HOME`
+- `user_home/` — directory tree mirrored directly to `$TARGET_HOME` (e.g. `user_home/.config/zsh/` → `$TARGET_HOME/.config/zsh/`)
 - `requirements.sh` — sourced to populate `REQUIRED_COMMANDS`, `REQUIRED_PATHS`, `REQUIRES_POWERLINE_FONT`
 - `install/<os>.sh` — OS package installer (currently only `ubuntu.sh`); skipped when `TERMINAL_SETUP_SKIP_OS_INSTALL=1`
 - `README.md` — human-readable description
