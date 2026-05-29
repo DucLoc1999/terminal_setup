@@ -401,6 +401,10 @@ unbind C-b #!important
 set -g prefix C-z #!important
 bind C-z send-prefix #!important
 
+# window
+bind -r Pagedown next-window
+bind -r Pageup previous-window
+
 # if you don't want Oh my tmux! to alter a binding or a setting, use #!important
 # bind c new-window -c '#{pane_current_path}' #!important
 
