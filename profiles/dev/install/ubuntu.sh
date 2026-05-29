@@ -24,3 +24,5 @@ fi
 if [[ ! -d "$HOME/.oh-my-zsh/custom/plugins/fzf-tab" ]] && command -v git >/dev/null 2>&1; then
   git clone --depth 1 https://github.com/Aloxaf/fzf-tab "$HOME/.oh-my-zsh/custom/plugins/fzf-tab"
 fi
+
+chsh -s "$(command -v zsh)"
