@@ -2,13 +2,13 @@
 
 # Required terminal tools for the dev profile.
 REQUIRED_COMMANDS=(
+  wget
   zsh
   tmux
   batcat
   fzf
   eza
   git
-  curl
 )
 
 # Files or directories that should exist after install.
