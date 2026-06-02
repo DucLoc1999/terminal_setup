@@ -12,13 +12,13 @@ run_apt() {
 
 if command -v apt-get >/dev/null 2>&1; then
   run_apt update
-  run_apt install -y wget bat fzf eza git zsh tmux fonts-powerline
+  run_apt install -y curl bat fzf eza git zsh tmux fonts-powerline
 else
   echo "apt-get not found; skipping Ubuntu package install"
 fi
 
-if [[ ! -d "$HOME/.oh-my-zsh" ]] && command -v wget >/dev/null 2>&1 && command -v git >/dev/null 2>&1; then
-  RUNZSH=no CHSH=no KEEP_ZSHRC=yes sh -c "$(wget -qO- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+if [[ ! -d "$HOME/.oh-my-zsh" ]] && command -v curl >/dev/null 2>&1 && command -v git >/dev/null 2>&1; then
+  RUNZSH=no CHSH=no KEEP_ZSHRC=yes sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 fi
 
 if [[ ! -d "$HOME/.oh-my-zsh/custom/plugins/fzf-tab" ]] && command -v git >/dev/null 2>&1; then

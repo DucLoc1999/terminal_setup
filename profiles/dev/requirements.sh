@@ -2,7 +2,7 @@
 
 # Required terminal tools for the dev profile.
 REQUIRED_COMMANDS=(
-  wget
+  curl
   zsh
   tmux
   batcat
