@@ -457,6 +457,10 @@ set -g @plugin 'tmux-plugins/tmux-resurrect'  # ensures session after poweroff m
 #set -g @plugin 'tmux-plugins/tmux-continuum'  # auto save session
 #set -g @continuum-restore 'on'  # auto open session when run tmux
 
+# custom for vim
+set -g @plugin 'tmux-plugins/tmux-sensible'
+set -g @plugin 'tmux-plugins/vim-tmux-navigator'
+
 # -- custom variables ----------------------------------------------------------
 
 # to define a custom #{foo} variable, define a POSIX shell function between the
