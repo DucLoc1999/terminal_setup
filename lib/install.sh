@@ -2,6 +2,7 @@
 
 load_profile_requirements() {
   local profile_dir="$1"
+  local conf_file="$profile_dir/dependencies.conf"
   local requirements_file="$profile_dir/requirements.sh"
   local HOME="$TARGET_HOME"
 
@@ -9,8 +10,12 @@ load_profile_requirements() {
   REQUIRED_PATHS=()
   REQUIRES_POWERLINE_FONT=0
 
-  if [[ -f "$requirements_file" ]]; then
-    # shellcheck disable=SC1090
+  if [[ -f "$conf_file" ]]; then
+    source "$conf_file"
+    REQUIRED_COMMANDS=("${preflight_commands[@]}")
+    REQUIRED_PATHS=("${preflight_paths[@]}")
+    REQUIRES_POWERLINE_FONT="${preflight_powerline_font:-0}"
+  elif [[ -f "$requirements_file" ]]; then
     source "$requirements_file"
   fi
 }
@@ -104,6 +109,19 @@ apply_profile_files() {
   shopt -u nullglob dotglob
 }
 
+detect_os_family() {
+  if [[ -f /etc/os-release ]]; then
+    source /etc/os-release
+    if [[ "${ID_LIKE:-}" == *debian* ]] || [[ "${ID:-}" == debian ]]; then echo "debian"; return; fi
+    if [[ "${ID_LIKE:-}" == *rhel* ]] || [[ "${ID_LIKE:-}" == *fedora* ]] || [[ "${ID:-}" == rhel ]] || [[ "${ID:-}" == fedora ]]; then echo "rhel"; return; fi
+    if [[ "${ID_LIKE:-}" == *centos* ]] || [[ "${ID:-}" == centos ]]; then echo "rhel"; return; fi
+    if [[ "${ID:-}" == arch ]] || [[ "${ID_LIKE:-}" == *arch* ]]; then echo "arch"; return; fi
+  fi
+  if command -v apt-get >/dev/null 2>&1; then echo "debian"; return; fi
+  if command -v dnf >/dev/null 2>&1 || command -v yum >/dev/null 2>&1; then echo "rhel"; return; fi
+  echo "unknown"
+}
+
 run_profile_installer() {
   local profile_dir="$1"
   local os_name
@@ -116,8 +134,24 @@ run_profile_installer() {
 
   case "$os_name" in
     linux)
-      if [[ -x "$profile_dir/install/ubuntu.sh" ]]; then
-        bash "$profile_dir/install/ubuntu.sh"
+      local family
+      family="$(detect_os_family)"
+      echo "Detected OS family: $family"
+
+      load_profile_requirements "$profile_dir"
+
+      if [[ -x "$profile_dir/install/$family/dependance.sh" ]]; then
+        echo "Running dependency installer for $family..."
+        bash "$profile_dir/install/$family/dependance.sh"
+      else
+        echo "No dependance.sh found for family: $family"
+      fi
+
+      if [[ -x "$profile_dir/install/$family/set_up.sh" ]]; then
+        echo "Running setup installer for $family..."
+        bash "$profile_dir/install/$family/set_up.sh"
+      else
+        echo "No set_up.sh found for family: $family"
       fi
       ;;
     darwin)

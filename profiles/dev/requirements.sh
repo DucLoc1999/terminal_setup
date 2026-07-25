@@ -1,21 +1,13 @@
 #!/usr/bin/env bash
 
-# Required terminal tools for the dev profile.
-REQUIRED_COMMANDS=(
-  curl
-  zsh
-  tmux
-  batcat
-  fzf
-  eza
-  git
-)
+# ── Canonical package names (documentation) ──
+#   curl, git, zsh, tmux, bat, fzf, eza
 
-# Files or directories that should exist after install.
-REQUIRED_PATHS=(
-  "$HOME/.oh-my-zsh"
-)
+# ── OS-specific dependency lists ──
+DEPENDANCE_DEBIAN=(curl git zsh tmux bat fzf eza fonts-powerline build-essential procps file)
+DEPENDANCE_RHEL=(curl git zsh tmux bat fzf eza powerline-fonts @development-tools procps-ng file)
 
-# Powerline glyphs are needed for the profile's font setup.
+# ── Preflight checks ──
+REQUIRED_COMMANDS=(curl zsh tmux batcat fzf eza git)
+REQUIRED_PATHS=("$HOME/.oh-my-zsh")
 REQUIRES_POWERLINE_FONT=1
-

@@ -13,7 +13,7 @@ fi
 # ==============================================================================
 
 export ZSH="$HOME/.oh-my-zsh"
-ZSH_THEME="fox"
+ZSH_THEME="dst"
 
 plugins=(
 	git
@@ -26,4 +26,15 @@ source $ZSH/oh-my-zsh.sh
 # User config
 # ==============================================================================
 
-[[ -f "$HOME/.local/bin/env" ]] && . "$HOME/.local/bin/env"
+# app
+export PATH="$HOME/.local/bin:$PATH"
+
+# Home brew
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+
+# opencode
+# export PATH=/home/loc/.opencode/bin:$PATH
+
+# nvim-mason: lsp manager
+export PATH="$HOME/.local/share/nvim/mason/bin:$PATH"
+
