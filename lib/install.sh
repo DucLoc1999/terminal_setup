@@ -9,19 +9,57 @@ load_profile_requirements() {
   REQUIRED_COMMANDS=()
   REQUIRED_PATHS=()
   REQUIRES_POWERLINE_FONT=0
+  BREW_PACKAGES=()
 
   if [[ -f "$conf_file" ]]; then
     source "$conf_file"
     REQUIRED_COMMANDS=("${preflight_commands[@]}")
     REQUIRED_PATHS=("${preflight_paths[@]}")
     REQUIRES_POWERLINE_FONT="${preflight_powerline_font:-0}"
+    if [[ -v brew_packages[@] ]]; then
+      BREW_PACKAGES=("${brew_packages[@]}")
+    fi
   elif [[ -f "$requirements_file" ]]; then
     source "$requirements_file"
   fi
 }
 
+LINUXBREW_BIN="/home/linuxbrew/.linuxbrew/bin"
+
+ensure_brew_in_path() {
+  if command -v brew >/dev/null 2>&1; then
+    return 0
+  fi
+  if [[ -x "$LINUXBREW_BIN/brew" ]]; then
+    eval "$("$LINUXBREW_BIN/brew" shellenv)"
+    return 0
+  fi
+  return 1
+}
+
 check_command() {
-  command -v "$1" >/dev/null 2>&1
+  local cmd="$1"
+  if command -v "$cmd" >/dev/null 2>&1; then
+    return 0
+  fi
+  if [[ -x "$LINUXBREW_BIN/$cmd" ]]; then
+    return 0
+  fi
+  return 1
+}
+
+command_source() {
+  local cmd="$1"
+  local cmd_path
+  cmd_path="$(command -v "$cmd" 2>/dev/null)"
+  if [[ -n "$cmd_path" ]] && [[ "$cmd_path" == *linuxbrew* || "$cmd_path" == *homebrew* ]]; then
+    echo "brew"
+    return
+  fi
+  if [[ -x "$LINUXBREW_BIN/$cmd" ]]; then
+    echo "brew"
+    return
+  fi
 }
 
 profile_precheck() {
@@ -39,7 +77,13 @@ profile_precheck() {
     echo "Required commands:"
     for item in "${REQUIRED_COMMANDS[@]}"; do
       if check_command "$item"; then
-        echo "  ok  $item"
+        local src
+        src="$(command_source "$item")"
+        if [[ -n "$src" ]]; then
+          echo "  ok  $item ($src)"
+        else
+          echo "  ok  $item"
+        fi
       else
         echo "  miss $item"
         missing=1
@@ -140,6 +184,17 @@ run_profile_installer() {
 
       load_profile_requirements "$profile_dir"
 
+      local apt_pkgs=()
+      if [[ "$family" == "debian" ]] && [[ -v debian_packages[@] ]]; then
+        apt_pkgs=("${debian_packages[@]}")
+      elif [[ "$family" == "rhel" ]] && [[ -v rhel_packages[@] ]]; then
+        apt_pkgs=("${rhel_packages[@]}")
+      fi
+
+      print_header "Package Plan"
+      print_package_plan apt_pkgs BREW_PACKAGES
+      echo
+
       if [[ -x "$profile_dir/install/$family/dependance.sh" ]]; then
         echo "Running dependency installer for $family..."
         bash "$profile_dir/install/$family/dependance.sh"
@@ -179,6 +234,7 @@ install_profile() {
     exit 1
   fi
 
+  ensure_brew_in_path || true
   profile_precheck "$profile_name"
 
   if [[ "${TERMINAL_SETUP_ASSUME_YES:-0}" != "1" ]]; then

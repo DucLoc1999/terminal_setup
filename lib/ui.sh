@@ -37,3 +37,15 @@ find_backups() {
   done
   return "$found"
 }
+
+print_package_plan() {
+  local -n _plan_apt=$1
+  local -n _plan_brew=$2
+
+  if ((${#_plan_apt[@]})); then
+    echo "[apt] Packages: ${_plan_apt[*]}"
+  fi
+  if ((${#_plan_brew[@]})); then
+    echo "[brew] Packages: ${_plan_brew[*]}"
+  fi
+}

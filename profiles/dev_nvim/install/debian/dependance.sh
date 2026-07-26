@@ -29,14 +29,19 @@ install_dependencies_debian() {
     done
 
     if ((${#missing[@]} > 0)); then
-      echo "Installing missing packages: ${missing[*]}"
+      echo "[apt] Installing: ${missing[*]}"
       run_apt update
       run_apt install -y "${missing[@]}"
     else
-      echo "All Debian dependencies already installed"
+      echo "[apt] All dependencies already installed"
     fi
   else
     echo "debian_packages not defined; skipping"
+  fi
+
+  if dpkg -l neovim >/dev/null 2>&1; then
+    echo "[apt] neovim detected from apt — removing in favor of Homebrew"
+    run_apt remove -y neovim
   fi
 }
 

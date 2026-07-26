@@ -34,13 +34,18 @@ install_dependencies_rhel() {
     done
 
     if ((${#missing[@]} > 0)); then
-      echo "Installing missing packages: ${missing[*]}"
+      echo "[$pkg_manager] Installing: ${missing[*]}"
       run_yum $pkg_manager install -y "${missing[@]}"
     else
-      echo "All RHEL dependencies already installed"
+      echo "[$pkg_manager] All dependencies already installed"
     fi
   else
     echo "rhel_packages not defined; skipping"
+  fi
+
+  if rpm -q neovim >/dev/null 2>&1; then
+    echo "[$pkg_manager] neovim detected from $pkg_manager — removing in favor of Homebrew"
+    run_yum $pkg_manager remove -y neovim
   fi
 }
 

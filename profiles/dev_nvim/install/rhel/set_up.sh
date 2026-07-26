@@ -12,11 +12,18 @@ run_brew() {
 
 install_homebrew_if_needed() {
   if command -v brew >/dev/null 2>&1; then
-    echo "Homebrew already installed"
+    echo "[brew] Homebrew already installed"
     return 0
   fi
 
-  echo "Installing Homebrew..."
+  local brew_bin="/home/linuxbrew/.linuxbrew/bin/brew"
+  if [[ -x "$brew_bin" ]]; then
+    eval "$("$brew_bin" shellenv)"
+    echo "[brew] Homebrew already installed (linuxbrew)"
+    return 0
+  fi
+
+  echo "[brew] Installing Homebrew..."
   if ! command -v curl >/dev/null 2>&1; then
     echo "curl not found; cannot install Homebrew"
     return 1
@@ -24,16 +31,23 @@ install_homebrew_if_needed() {
 
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-  eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+  eval "$("$brew_bin" shellenv)"
 }
 
 install_neovim_via_brew() {
   if command -v nvim >/dev/null 2>&1; then
-    echo "Neovim already installed"
+    local nvim_path
+    nvim_path="$(command -v nvim)"
+    if [[ "$nvim_path" == *linuxbrew* ]] || [[ "$nvim_path" == *homebrew* ]]; then
+      echo "[brew] Neovim already installed"
+      return 0
+    fi
+    echo "[brew] Neovim found at $nvim_path (not brew) — reinstalling via Homebrew"
+    run_brew brew install neovim
     return 0
   fi
 
-  echo "Installing Neovim via Homebrew..."
+  echo "[brew] Installing: neovim"
   run_brew brew install neovim
 }
 
@@ -84,7 +98,14 @@ set_zsh_as_default() {
 }
 
 install_homebrew_if_needed
-eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv 2>/dev/null || true)"
+
+if ! command -v brew >/dev/null 2>&1; then
+  local_brew_bin="/home/linuxbrew/.linuxbrew/bin/brew"
+  if [[ -x "$local_brew_bin" ]]; then
+    eval "$("$local_brew_bin" shellenv)"
+  fi
+fi
+
 install_neovim_via_brew
 install_oh_my_zsh
 install_fzf_tab
