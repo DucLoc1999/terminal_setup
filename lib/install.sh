@@ -122,6 +122,7 @@ profile_precheck() {
 
 apply_profile_files() {
   local profile_dir="$1"
+  local profile_name="$2"
   local config_dir="$profile_dir/user_home"
   local src
   shopt -s nullglob dotglob
@@ -132,6 +133,19 @@ apply_profile_files() {
   fi
 
   print_header "Apply Config"
+
+  if [[ "$profile_name" == "dev_nvim" ]]; then
+    for item in nvim tmux zsh; do
+      target="$TARGET_HOME/.config/$item"
+      if [[ -e "$target" || -L "$target" ]]; then
+        if [[ "${TERMINAL_SETUP_ASSUME_YES:-0}" == "1" ]] || confirm "Remove existing $target for clean install?"; then
+          rm -rf "$target"
+          echo "Removed $target"
+        fi
+      fi
+    done
+  fi
+
   for src in "$config_dir"/*; do
     local base relpath
     base="$(basename "$src")"
@@ -145,8 +159,10 @@ apply_profile_files() {
 
     if [[ -d "$src" ]]; then
       mkdir -p "$(dirname "$TARGET_HOME/$relpath")"
+      cp -a "$src/" "$TARGET_HOME/$relpath"
+    else
+      cp -a "$src" "$TARGET_HOME/$relpath"
     fi
-    cp -a "$src" "$TARGET_HOME/$relpath"
     echo "Installed $relpath"
   done
 
@@ -261,5 +277,5 @@ install_profile() {
   fi
 
   run_profile_installer "$profile_dir"
-  apply_profile_files "$profile_dir"
+  apply_profile_files "$profile_dir" "$profile_name"
 }
